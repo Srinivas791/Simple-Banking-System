@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Global Bank | Simple Banking System</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app-wrapper">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-logo">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <span>Apex Bank</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <span class="menu-category-label">Main Menu</span>
+            <div class="nav-item active" data-tab="dashboard">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-tab="transactions">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Transactions</span>
+                <span class="nav-badge" id="sidebarTxCount">6</span>
+            </div>
+            <div class="nav-item" data-tab="transfer">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>Send & Transfer</span>
+            </div>
+            <div class="nav-item" data-tab="bills">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Pay Bills</span>
+            </div>
+
+            <span class="menu-category-label">Products & Services</span>
+            <div class="nav-item" data-tab="cards">
+                <i class="fa-solid fa-credit-card"></i>
+                <span>Virtual Cards</span>
+            </div>
+            <div class="nav-item" data-tab="deposits">
+                <i class="fa-solid fa-vault"></i>
+                <span>Fixed Deposits</span>
+            </div>
+            <div class="nav-item" data-tab="loans">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+                <span>Loans & EMI</span>
+            </div>
+            <div class="nav-item" data-tab="analytics">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Analytics & Insights</span>
+            </div>
+
+            <span class="menu-category-label">Account</span>
+            <div class="nav-item" data-tab="settings">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Settings</span>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-mini-card" id="sidebarUserCard" title="Click to view profile / settings">
+                <img src="" alt="Avatar" class="user-avatar" id="sidebarUserAvatar">
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Alex Morgan</div>
+                    <div class="user-acc-num" id="sidebarUserAcc"># 1001248590</div>
+                </div>
+                <i class="fa-solid fa-angle-right text-muted"></i>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN APP WRAPPER -->
+    <main class="main-wrapper">
+        <!-- TOP NAVIGATION BAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-title-box">
+                    <h1 id="topbarPageTitle">Dashboard</h1>
+                    <p id="topbarSubText">Welcome back, here is your financial overview.</p>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <!-- Demo Profile Switcher -->
+                <div class="demo-user-selector" title="Switch active account or open a new one">
+                    <i class="fa-solid fa-users text-muted"></i>
+                    <select id="userAccountSelect">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <!-- Theme Toggle Button -->
+                <button class="btn-icon-action" id="themeToggleBtn" title="Toggle Light / Dark Mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+
+                <!-- New Account Action Button -->
+                <button class="btn-primary" id="openNewAccountBtn">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span class="hide-mobile">Open Account</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- PRINT STATEMENT HEADER (Only visible when printing) -->
+        <div class="print-only-header">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h1 style="font-size:24px; font-weight:800; color:#065F46;">APEX GLOBAL BANK</h1>
+                    <p>Official Certified Account Statement</p>
+                </div>
+                <div style="text-align:right;">
+                    <p><strong>Date Generated:</strong> <span id="printDate"></span></p>
+                    <p><strong>Account Holder:</strong> <span id="printName"></span></p>
+                    <p><strong>Account Number:</strong> <span id="printAccNum"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE CONTENT TABS -->
+        <div class="page-container">
+
+            <!-- TAB 1: DASHBOARD -->
+            <section class="tab-pane active" id="dashboardTab">
+                <!-- HERO ROW: Balance & Quick Actions -->
+                <div class="dashboard-hero">
+                    <div class="balance-card">
+                        <div class="balance-header">
+                            <span class="balance-label">
+                                <i class="fa-solid fa-wallet"></i> Total Available Balance
+                            </span>
+                            <button class="toggle-balance-btn" id="toggleBalanceVisibility" title="Hide/Unhide balance">
+                                <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <div class="balance-amount-row">
+                            <h2 class="balance-amount" id="heroBalanceDisplay">$14,250.75</h2>
+                            <span class="currency-tag" id="heroAccountType">Savings Account</span>
+                        </div>
+                        <div class="account-meta-strip">
+                            <div class="meta-item">
+                                <span class="meta-title">Account Number</span>
+                                <span class="meta-value">
+                                    <span id="heroAccountNumber">1001248590</span>
+                                    <button class="copy-badge-btn" id="copyAccNumberBtn" title="Copy Account Number">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-title">Account Holder</span>
+                                <span class="meta-value" id="heroAccountHolder">Alex Morgan</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-title">Status</span>
+                                <span class="meta-value" style="color:var(--primary);">
+                                    <i class="fa-solid fa-circle-check"></i> Active
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions-card">
+                        <div class="card-title-sm">Quick Actions</div>
+                        <div class="action-buttons-grid">
+                            <button class="btn-action-tile action-deposit" id="btnQuickDeposit">
+                                <i class="fa-solid fa-circle-arrow-down"></i>
+                                <span>Deposit</span>
+                            </button>
+                            <button class="btn-action-tile action-withdraw" id="btnQuickWithdraw">
+                                <i class="fa-solid fa-money-bill-transfer"></i>
+                                <span>Withdraw</span>
+                            </button>
+                            <button class="btn-action-tile action-transfer" id="btnQuickTransfer">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Send Money</span>
+                            </button>
+                            <button class="btn-action-tile action-bills" id="btnQuickBills">
+                                <i class="fa-solid fa-bolt"></i>
+                                <span>Pay Bills</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 METRICS CARDS -->
+                <div class="stats-grid-4">
+                    <div class="stat-box">
+                        <div class="stat-icon-wrap green">
+                            <i class="fa-solid fa-arrow-down-long"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-title">Total Inflow</span>
+                            <span class="stat-number" id="dashTotalInflow">$4,545.25</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon-wrap red">
+                            <i class="fa-solid fa-arrow-up-long"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-title">Total Outflow</span>
+                            <span class="stat-number" id="dashTotalOutflow">$772.49</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon-wrap blue">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-title">Active Cards</span>
+                            <span class="stat-number" id="dashCardCount">2 Cards</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon-wrap amber">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-title">Security Status</span>
+                            <span class="stat-number" style="font-size:1rem; color:var(--primary);">Protected (PIN)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SPLIT SECTION: RECENT TRANSACTIONS & VIRTUAL CARD PREVIEW -->
+                <div class="dashboard-content-split">
+                    <!-- Recent Activity Panel -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <i class="fa-solid fa-clock-rotate-left"></i> Recent Transactions
+                            </h3>
+                            <span class="link-action" id="dashViewAllTx">View Statement <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                        <div class="transactions-list" id="dashTransactionsList">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Primary Virtual Card Preview & Quick Contacts -->
+                    <div style="display:flex; flex-direction:column; gap:24px;">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title"><i class="fa-solid fa-credit-card"></i> Active Card</h3>
+                                <span class="link-action" id="dashManageCards">Manage</span>
+                            </div>
+                            <!-- Mini Card preview container -->
+                            <div id="dashActiveCardPreview"></div>
+                        </div>
+
+                        <!-- Quick Transfer to other accounts -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title"><i class="fa-solid fa-user-group"></i> Quick Transfer</h3>
+                            </div>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Instant transfer to registered bank members:</p>
+                            <div id="quickContactsList" style="display:flex; flex-direction:column; gap:10px;">
+                                <!-- Dynamic contacts -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TRANSACTIONS & STATEMENT -->
+            <section class="tab-pane" id="transactionsTab">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title"><i class="fa-solid fa-file-lines"></i> Complete Account Statement</h3>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-export" id="btnExportCSV">
+                                <i class="fa-solid fa-file-csv"></i> Download CSV
+                            </button>
+                            <button class="btn-export" id="btnPrintStatement">
+                                <i class="fa-solid fa-print"></i> Print Statement
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Bar -->
+                    <div class="table-filter-bar">
+                        <div class="search-input-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="txSearchInput" placeholder="Search by description, reference, or recipient...">
+                        </div>
+                        <div class="filter-group">
+                            <select class="select-filter" id="txTypeFilter">
+                                <option value="ALL">All Types</option>
+                                <option value="deposit">Deposits Only</option>
+                                <option value="withdrawal">Withdrawals Only</option>
+                                <option value="transfer">Transfers Only</option>
+                                <option value="bill_pay">Bill Payments Only</option>
+                            </select>
+                            <select class="select-filter" id="txSortFilter">
+                                <option value="NEWEST">Newest First</option>
+                                <option value="OLDEST">Oldest First</option>
+                                <option value="HIGH">Highest Amount</option>
+                                <option value="LOW">Lowest Amount</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div style="overflow-x:auto;">
+                        <table class="custom-table" id="fullTransactionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Category</th>
+                                    <th>Description / Reference</th>
+                                    <th>Sender / Recipient</th>
+                                    <th>Status</th>
+                                    <th style="text-align:right;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fullTransactionsBody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: TRANSFER & PAY -->
+            <section class="tab-pane" id="transferTab">
+                <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:24px;">
+                    <!-- Transfer Form -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="fa-solid fa-paper-plane"></i> Fund Transfer Form</h3>
+                        </div>
+
+                        <form id="transferMoneyForm">
+                            <!-- Mode Switcher: Internal vs External -->
+                            <div class="form-group">
+                                <label class="form-label">Transfer Destination</label>
+                                <div style="display:flex; gap:12px;">
+                                    <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px; background:var(--bg-surface-elevated); border:1px solid var(--border-color); border-radius:var(--radius-md); cursor:pointer;">
+                                        <input type="radio" name="transferType" value="internal" checked id="radioInternal">
+                                        <span><strong>Within Apex Bank</strong> (Instant, Zero Fee)</span>
+                                    </label>
+                                    <label style="flex:1; display:flex; align-items:center; gap:8px; padding:12px; background:var(--bg-surface-elevated); border:1px solid var(--border-color); border-radius:var(--radius-md); cursor:pointer;">
+                                        <input type="radio" name="transferType" value="external" id="radioExternal">
+                                        <span><strong>Other Bank</strong> (Wire Transfer)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Internal Recipient Account -->
+                            <div class="form-group" id="fieldInternalAcc">
+                                <label class="form-label">Recipient Account Number *</label>
+                                <input type="text" class="form-control" id="transferRecipientAcc" placeholder="e.g. 1001928472" maxlength="10" required>
+                                <div id="recipientLookupResult" style="margin-top:6px; font-size:0.8rem; font-weight:600;"></div>
+                            </div>
+
+                            <!-- External Bank Fields (Hidden by default) -->
+                            <div id="externalBankFields" style="display:none;">
+                                <div class="form-group">
+                                    <label class="form-label">Recipient Full Name *</label>
+                                    <input type="text" class="form-control" id="externalRecipientName" placeholder="e.g. Robert Smith">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Recipient Bank Name *</label>
+                                    <input type="text" class="form-control" id="externalBankName" placeholder="e.g. Chase Bank, HSBC, Citi">
+                                </div>
+                            </div>
+
+                            <!-- Amount -->
+                            <div class="form-group">
+                                <label class="form-label">Transfer Amount ($) *</label>
+                                <div class="currency-input-wrapper">
+                                    <span class="currency-symbol-tag">$</span>
+                                    <input type="number" class="form-control" id="transferAmount" placeholder="0.00" step="0.01" min="1" required>
+                                </div>
+                                <div class="quick-amount-tags">
+                                    <span class="amount-chip" onclick="document.getElementById('transferAmount').value = 50">$50</span>
+                                    <span class="amount-chip" onclick="document.getElementById('transferAmount').value = 100">$100</span>
+                                    <span class="amount-chip" onclick="document.getElementById('transferAmount').value = 250">$250</span>
+                                    <span class="amount-chip" onclick="document.getElementById('transferAmount').value = 500">$500</span>
+                                    <span class="amount-chip" onclick="document.getElementById('transferAmount').value = 1000">$1,000</span>
+                                </div>
+                            </div>
+
+                            <!-- Note / Reference -->
+                            <div class="form-group">
+                                <label class="form-label">Transfer Note / Reference</label>
+                                <input type="text" class="form-control" id="transferReference" placeholder="e.g. Rent, Grocery share, Gift">
+                            </div>
+
+                            <!-- Security PIN -->
+                            <div class="form-group">
+                                <label class="form-label">4-Digit Security PIN *</label>
+                                <input type="password" class="form-control" id="transferPin" placeholder="••••" maxlength="4" style="letter-spacing:0.3em; font-size:1.2rem;" required>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Default demo accounts PIN is <strong>1234</strong></span>
+                            </div>
+
+                            <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:14px;">
+                                <i class="fa-solid fa-paper-plane"></i> Authorize & Send Funds
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Right Column: Balance Summary & Beneficiary Shortcuts -->
+                    <div style="display:flex; flex-direction:column; gap:24px;">
+                        <div class="panel">
+                            <h4 class="card-title-sm">Current Balance</h4>
+                            <div style="font-size:1.8rem; font-weight:800; color:var(--primary);" id="transferAvailableBalance">$14,250.75</div>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Daily limit: $25,000.00 | Fee: $0.00</p>
+                        </div>
+
+                        <div class="panel">
+                            <h4 class="card-title-sm"><i class="fa-solid fa-users"></i> Available Demo Accounts to Test Transfer</h4>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Click any account below to autofill and test real-time money transfer:</p>
+                            <div id="transferQuickAccountsList" style="display:flex; flex-direction:column; gap:10px;">
+                                <!-- Autofill Buttons -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: BILL PAYMENTS -->
+            <section class="tab-pane" id="billsTab">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Instant Bill Payments</h3>
+                    </div>
+                    <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:24px;">
+                        Pay electricity, water, internet, mobile and credit card bills instantly with zero transaction fee.
+                    </p>
+
+                    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+                        <!-- Bill 1: Electricity -->
+                        <div class="stat-box" style="flex-direction:column; align-items:flex-start; cursor:pointer;" onclick="App.openBillPayModal('Electricity', 'City Power & Electric', 'ELE-99823')">
+                            <div style="display:flex; align-items:center; gap:14px; width:100%;">
+                                <div class="stat-icon-wrap amber"><i class="fa-solid fa-bolt"></i></div>
+                                <div>
+                                    <h4 style="font-size:0.95rem; font-weight:700;">Electricity Bill</h4>
+                                    <span style="font-size:0.75rem; color:var(--text-muted);">City Power & Electric</span>
+                                </div>
+                            </div>
+                            <button class="btn-primary" style="margin-top:16px; width:100%; justify-content:center; font-size:0.85rem; padding:8px;">
+                                Pay Electricity Bill
+                            </button>
+                        </div>
+
+                        <!-- Bill 2: Water -->
+                        <div class="stat-box" style="flex-direction:column; align-items:flex-start; cursor:pointer;" onclick="App.openBillPayModal('Water', 'Metro Water Supply', 'WTR-44021')">
+                            <div style="display:flex; align-items:center; gap:14px; width:100%;">
+                                <div class="stat-icon-wrap blue"><i class="fa-solid fa-faucet-drip"></i></div>
+                                <div>
+                                    <h4 style="font-size:0.95rem; font-weight:700;">Water & Utility</h4>
+                                    <span style="font-size:0.75rem; color:var(--text-muted);">Metro Water Supply</span>
+                                </div>
+                            </div>
+                            <button class="btn-primary" style="margin-top:16px; width:100%; justify-content:center; font-size:0.85rem; padding:8px;">
+                                Pay Water Bill
+                            </button>
+                        </div>
+
+                        <!-- Bill 3: Internet -->
+                        <div class="stat-box" style="flex-direction:column; align-items:flex-start; cursor:pointer;" onclick="App.openBillPayModal('Internet', 'Gigabit Fiber Internet', 'INT-33120')">
+                            <div style="display:flex; align-items:center; gap:14px; width:100%;">
+                                <div class="stat-icon-wrap green"><i class="fa-solid fa-wifi"></i></div>
+                                <div>
+                                    <h4 style="font-size:0.95rem; font-weight:700;">High-Speed Internet</h4>
+                                    <span style="font-size:0.75rem; color:var(--text-muted);">Gigabit Fiber Corp</span>
+                                </div>
+                            </div>
+                            <button class="btn-primary" style="margin-top:16px; width:100%; justify-content:center; font-size:0.85rem; padding:8px;">
+                                Pay Internet Bill
+                            </button>
+                        </div>
+
+                        <!-- Bill 4: Mobile Recharge -->
+                        <div class="stat-box" style="flex-direction:column; align-items:flex-start; cursor:pointer;" onclick="App.openBillPayModal('Mobile', 'Verizon Wireless Postpaid', 'MOB-88192')">
+                            <div style="display:flex; align-items:center; gap:14px; width:100%;">
+                                <div class="stat-icon-wrap red"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                                <div>
+                                    <h4 style="font-size:0.95rem; font-weight:700;">Mobile Recharge / Bill</h4>
+                                    <span style="font-size:0.75rem; color:var(--text-muted);">5G Cellular Network</span>
+                                </div>
+                            </div>
+                            <button class="btn-primary" style="margin-top:16px; width:100%; justify-content:center; font-size:0.85rem; padding:8px;">
+                                Recharge Mobile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: VIRTUAL CARDS -->
+            <section class="tab-pane" id="cardsTab">
+                <div class="panel-header" style="margin-bottom:20px;">
+                    <div>
+                        <h2 style="font-size:1.3rem; font-weight:700;">Virtual Debit & Credit Cards</h2>
+                        <p style="font-size:0.82rem; color:var(--text-muted);">Click on any card to flip and view CVV security code.</p>
+                    </div>
+                    <button class="btn-primary" id="btnIssueNewCard">
+                        <i class="fa-solid fa-plus"></i> Issue New Virtual Card
+                    </button>
+                </div>
+
+                <!-- 3D CARDS GRID -->
+                <div class="cards-container" id="cardsListContainer">
+                    <!-- Injected by JavaScript -->
+                </div>
+
+                <!-- Active Card Security Controls Panel -->
+                <div class="card-controls-panel" id="cardControlsPanel">
+                    <h3 class="panel-title" style="margin-bottom:16px;">
+                        <i class="fa-solid fa-shield-halved"></i> Security Controls: <span id="selectedCardLabel">Visa Debit (•••• 8821)</span>
+                    </h3>
+                    
+                    <div class="toggle-setting-row">
+                        <div class="setting-info">
+                            <h4>Freeze / Lock Card</h4>
+                            <p>Temporarily lock this card to block all new authorizations.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="cardFreezeToggle">
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+
+                    <div class="toggle-setting-row">
+                        <div class="setting-info">
+                            <h4>Online Payments (E-Commerce)</h4>
+                            <p>Allow card payments on websites and mobile applications.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="cardOnlineToggle" checked>
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+
+                    <div class="toggle-setting-row">
+                        <div class="setting-info">
+                            <h4>International Transactions</h4>
+                            <p>Allow foreign currency payments and overseas merchant transactions.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="cardIntlToggle" checked>
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+
+                    <div class="toggle-setting-row">
+                        <div class="setting-info" style="flex:1;">
+                            <h4>Daily Spending Limit</h4>
+                            <p>Maximum allowed spending limit per day.</p>
+                            <div style="display:flex; align-items:center; gap:16px; margin-top:8px;">
+                                <input type="range" min="100" max="10000" step="100" id="cardLimitSlider" style="flex:1; cursor:pointer;">
+                                <span style="font-size:1.1rem; font-weight:700; color:var(--primary); min-width:80px;" id="cardLimitDisplay">$3,000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: FIXED DEPOSITS -->
+            <section class="tab-pane" id="depositsTab">
+                <div style="display:grid; grid-template-columns: 1fr 1.3fr; gap:24px;">
+                    <!-- Open New FD Form -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="fa-solid fa-vault"></i> Open Fixed Deposit</h3>
+                        </div>
+                        <form id="openFdForm">
+                            <div class="form-group">
+                                <label class="form-label">Deposit Amount ($) *</label>
+                                <div class="currency-input-wrapper">
+                                    <span class="currency-symbol-tag">$</span>
+                                    <input type="number" class="form-control" id="fdAmountInput" placeholder="1,000.00" min="100" step="50" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Tenure & Interest Rate</label>
+                                <select class="form-control" id="fdTenureSelect">
+                                    <option value="6">6 Months @ 6.2% Annual Yield</option>
+                                    <option value="12" selected>12 Months @ 7.5% Annual Yield</option>
+                                    <option value="24">24 Months @ 8.2% Annual Yield</option>
+                                    <option value="36">36 Months @ 8.8% Annual Yield</option>
+                                </select>
+                            </div>
+
+                            <!-- Live Maturity Preview Box -->
+                            <div style="background:var(--bg-surface-elevated); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:18px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.85rem;">
+                                    <span class="text-muted">Estimated Interest Earned:</span>
+                                    <span style="font-weight:700; color:var(--primary);" id="fdPreviewInterest">$75.00</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:0.95rem;">
+                                    <span class="text-muted">Total Maturity Amount:</span>
+                                    <span style="font-weight:800; color:var(--text-primary);" id="fdPreviewMaturity">$1,075.00</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Security PIN (4 Digits) *</label>
+                                <input type="password" class="form-control" id="fdPinInput" placeholder="••••" maxlength="4" required>
+                            </div>
+
+                            <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:12px;">
+                                <i class="fa-solid fa-lock"></i> Lock Funds & Open FD
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Active Fixed Deposits List -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="fa-solid fa-piggy-bank"></i> Your Fixed Deposits</h3>
+                        </div>
+                        <div id="activeFdList" style="display:flex; flex-direction:column; gap:14px;">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 7: LOANS & EMI CALCULATOR -->
+            <section class="tab-pane" id="loansTab">
+                <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:24px;">
+                    <!-- Loan Application & EMI Calculator -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="fa-solid fa-calculator"></i> Interactive EMI Calculator & Application</h3>
+                        </div>
+
+                        <form id="applyLoanForm">
+                            <div class="form-group">
+                                <label class="form-label">Loan Facility Type</label>
+                                <select class="form-control" id="loanTypeSelect">
+                                    <option value="Personal Loan">Personal Loan (8.5% p.a.)</option>
+                                    <option value="Car Loan">Car / Vehicle Loan (6.8% p.a.)</option>
+                                    <option value="Home Improvement Loan">Home Improvement (7.2% p.a.)</option>
+                                    <option value="Education Loan">Education Loan (5.5% p.a.)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Loan Amount: <strong id="loanAmountSliderVal" style="color:var(--primary);">$10,000</strong></label>
+                                <input type="range" class="form-control" id="loanAmountSlider" min="1000" max="50000" step="500" value="10000" style="padding:4px;">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Repayment Tenure: <strong id="loanTenureSliderVal" style="color:var(--accent-blue);">24 Months</strong></label>
+                                <input type="range" class="form-control" id="loanTenureSlider" min="6" max="60" step="6" value="24" style="padding:4px;">
+                            </div>
+
+                            <!-- Calculated Summary -->
+                            <div style="background:var(--bg-surface-elevated); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:18px; margin-bottom:20px;">
+                                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; text-align:center;">
+                                    <div>
+                                        <div style="font-size:0.75rem; color:var(--text-muted);">Monthly EMI</div>
+                                        <div style="font-size:1.25rem; font-weight:800; color:var(--primary);" id="loanMonthlyEmi">$454.56</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size:0.75rem; color:var(--text-muted);">Total Interest</div>
+                                        <div style="font-size:1.25rem; font-weight:800; color:var(--accent-rose);" id="loanTotalInterest">$909.44</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size:0.75rem; color:var(--text-muted);">Total Payable</div>
+                                        <div style="font-size:1.25rem; font-weight:800; color:var(--text-primary);" id="loanTotalPayable">$10,909.44</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Enter Security PIN to Disburse Funds *</label>
+                                <input type="password" class="form-control" id="loanPinInput" placeholder="••••" maxlength="4" required>
+                            </div>
+
+                            <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:12px;">
+                                <i class="fa-solid fa-hand-holding-dollar"></i> Instant Approval & Disburse Funds
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Active Loans List -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="fa-solid fa-landmark"></i> Active Loan Facilities</h3>
+                        </div>
+                        <div id="activeLoansList" style="display:flex; flex-direction:column; gap:14px;">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 8: ANALYTICS & INSIGHTS -->
+            <section class="tab-pane" id="analyticsTab">
+                <div class="stats-grid-4" style="margin-bottom:24px;">
+                    <div class="stat-box">
+                        <div class="stat-icon-wrap green"><i class="fa-solid fa-circle-arrow-down"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-title">Total Inflow</span>
+                            <span class="stat-number" id="statTotalInflow">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon-wrap red"><i class="fa-solid fa-circle-arrow-up"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-title">Total Outflow</span>
+                            <span class="stat-number" id="statTotalOutflow">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon-wrap blue"><i class="fa-solid fa-piggy-bank"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-title">Net Savings</span>
+                            <span class="stat-number" id="statNetSavings">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon-wrap amber"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-title">Financial Health Score</span>
+                            <span class="stat-number" id="statHealthScore">92/100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:24px;">
+                    <div class="panel">
+                        <h3 class="panel-title" style="margin-bottom:16px;">
+                            <i class="fa-solid fa-chart-column"></i> Monthly Inflow vs Outflow Cashflow
+                        </h3>
+                        <div style="position:relative; height:320px;">
+                            <canvas id="cashflowBarChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h3 class="panel-title" style="margin-bottom:16px;">
+                            <i class="fa-solid fa-chart-pie"></i> Spending by Category
+                        </h3>
+                        <div style="position:relative; height:320px;">
+                            <canvas id="categoryPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 9: SETTINGS -->
+            <section class="tab-pane" id="settingsTab">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
+                    <!-- Profile Information Form -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="fa-solid fa-user-gear"></i> Personal & Profile Information</h3>
+                        </div>
+                        <form id="profileSettingsForm">
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="settingsFullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="settingsEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" id="settingsPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Security PIN (4 Digits)</label>
+                                <input type="password" class="form-control" id="settingsPin" maxlength="4" required>
+                            </div>
+                            <button type="submit" class="btn-primary" style="padding:12px 20px;">
+                                <i class="fa-solid fa-check"></i> Save Profile Changes
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- System & Data Management -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="fa-solid fa-database"></i> Database & System Controls</h3>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:16px;">
+                            <div style="background:var(--bg-surface-elevated); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+                                <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:6px;">Reset Demo Data</h4>
+                                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+                                    Restore database back to initial seed data (Alex Morgan, Sophia Chen, and Liam Davis with fresh transaction histories).
+                                </p>
+                                <button class="btn-secondary" id="btnResetDatabase" style="color:var(--accent-rose); border-color:var(--accent-rose);">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset to Factory Seed Data
+                                </button>
+                            </div>
+
+                            <div style="background:var(--bg-surface-elevated); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+                                <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:6px;">Bank Architecture Information</h4>
+                                <p style="font-size:0.8rem; color:var(--text-muted);">
+                                    <strong>Architecture:</strong> Client-Side LocalStorage Database Engine<br>
+                                    <strong>Security:</strong> 4-Digit Multi-Factor PIN Authorization<br>
+                                    <strong>Real-time State:</strong> Reactive Transaction & Balance Syncing
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- ==========================================================================
+     MODALS
+     ========================================================================== -->
+
+<!-- 1. DEPOSIT MODAL -->
+<div class="modal-backdrop" id="depositModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa-solid fa-circle-arrow-down text-emerald-500"></i> Deposit Funds</h3>
+            <button class="modal-close-btn" data-close-modal>&times;</button>
+        </div>
+        <form id="depositForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Deposit Source / Method</label>
+                    <select class="form-control" id="depositSource">
+                        <option value="Online Banking / Wire">Online Banking / Wire Transfer</option>
+                        <option value="Cash / Cash Deposit Machine">Cash Deposit Machine (CDM)</option>
+                        <option value="Check Deposit">Check Deposit</option>
+                        <option value="Debit Card / UPI">External Debit Card</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Deposit Category</label>
+                    <select class="form-control" id="depositCategory">
+                        <option value="Deposit">General Deposit</option>
+                        <option value="Salary">Salary / Payroll</option>
+                        <option value="Business">Business Revenue</option>
+                        <option value="Investment">Investment Return</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Deposit Amount ($) *</label>
+                    <div class="currency-input-wrapper">
+                        <span class="currency-symbol-tag">$</span>
+                        <input type="number" class="form-control" id="depositAmount" placeholder="0.00" min="5" step="0.01" required>
+                    </div>
+                    <div class="quick-amount-tags">
+                        <span class="amount-chip" onclick="document.getElementById('depositAmount').value = 100">$100</span>
+                        <span class="amount-chip" onclick="document.getElementById('depositAmount').value = 500">$500</span>
+                        <span class="amount-chip" onclick="document.getElementById('depositAmount').value = 1000">$1,000</span>
+                        <span class="amount-chip" onclick="document.getElementById('depositAmount').value = 5000">$5,000</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Reference / Note</label>
+                    <input type="text" class="form-control" id="depositReference" placeholder="e.g. Savings deposit, Bonus">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Confirm Deposit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2. WITHDRAW MODAL -->
+<div class="modal-backdrop" id="withdrawModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa-solid fa-money-bill-transfer text-rose-500"></i> Cash Withdrawal</h3>
+            <button class="modal-close-btn" data-close-modal>&times;</button>
+        </div>
+        <form id="withdrawForm">
+            <div class="modal-body">
+                <div style="background:var(--bg-surface-elevated); padding:12px; border-radius:var(--radius-md); margin-bottom:16px;">
+                    <span style="font-size:0.75rem; color:var(--text-muted);">Available Liquid Balance:</span>
+                    <div style="font-size:1.3rem; font-weight:800; color:var(--primary);" id="withdrawAvailBalance">$0.00</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Withdrawal Method</label>
+                    <select class="form-control" id="withdrawMethod">
+                        <option value="ATM Cash Withdrawal">ATM Cash Dispenser</option>
+                        <option value="Branch Counter Cashier">Branch Counter Teller</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Withdrawal Amount ($) *</label>
+                    <div class="currency-input-wrapper">
+                        <span class="currency-symbol-tag">$</span>
+                        <input type="number" class="form-control" id="withdrawAmount" placeholder="0.00" min="10" step="10" required>
+                    </div>
+                    <div class="quick-amount-tags">
+                        <span class="amount-chip" onclick="document.getElementById('withdrawAmount').value = 40">$40</span>
+                        <span class="amount-chip" onclick="document.getElementById('withdrawAmount').value = 100">$100</span>
+                        <span class="amount-chip" onclick="document.getElementById('withdrawAmount').value = 200">$200</span>
+                        <span class="amount-chip" onclick="document.getElementById('withdrawAmount').value = 500">$500</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Security PIN (4 Digits) *</label>
+                    <input type="password" class="form-control" id="withdrawPin" placeholder="••••" maxlength="4" style="letter-spacing:0.3em; font-size:1.2rem;" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+                <button type="submit" class="btn-primary" style="background:var(--accent-rose);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Authorize & Withdraw</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 3. BILL PAY MODAL -->
+<div class="modal-backdrop" id="billPayModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title" id="billPayModalTitle"><i class="fa-solid fa-receipt"></i> Pay Bill</h3>
+            <button class="modal-close-btn" data-close-modal>&times;</button>
+        </div>
+        <form id="billPayForm">
+            <div class="modal-body">
+                <input type="hidden" id="billPayType">
+                <div class="form-group">
+                    <label class="form-label">Biller Provider</label>
+                    <input type="text" class="form-control" id="billPayProvider" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account / Consumer ID *</label>
+                    <input type="text" class="form-control" id="billPayConsumerId" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bill Amount ($) *</label>
+                    <div class="currency-input-wrapper">
+                        <span class="currency-symbol-tag">$</span>
+                        <input type="number" class="form-control" id="billPayAmount" placeholder="0.00" min="1" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Security PIN (4 Digits) *</label>
+                    <input type="password" class="form-control" id="billPayPin" placeholder="••••" maxlength="4" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Pay Bill Now</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 4. OPEN NEW ACCOUNT MODAL -->
+<div class="modal-backdrop" id="newAccountModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa-solid fa-user-plus text-primary"></i> Open New Apex Bank Account</h3>
+            <button class="modal-close-btn" data-close-modal>&times;</button>
+        </div>
+        <form id="newAccountForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Full Legal Name *</label>
+                    <input type="text" class="form-control" id="newAccFullName" placeholder="e.g. Jordan Lee" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" class="form-control" id="newAccEmail" placeholder="jordan.lee@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number *</label>
+                    <input type="tel" class="form-control" id="newAccPhone" placeholder="+1 (555) 019-2834" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Type *</label>
+                    <select class="form-control" id="newAccType">
+                        <option value="Savings Account">High-Yield Savings Account (4.5% APY)</option>
+                        <option value="Checking Account">Premier Checking Account (Zero Fees)</option>
+                        <option value="Business Account">Business Platinum Account</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Initial Opening Deposit ($) * (Min $50)</label>
+                    <div class="currency-input-wrapper">
+                        <span class="currency-symbol-tag">$</span>
+                        <input type="number" class="form-control" id="newAccDeposit" value="500" min="50" step="10" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Create 4-Digit Security PIN *</label>
+                    <input type="password" class="form-control" id="newAccPin" placeholder="4 digits" maxlength="4" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-id-card"></i> Create Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 5. ISSUE NEW CARD MODAL -->
+<div class="modal-backdrop" id="issueCardModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa-solid fa-credit-card text-primary"></i> Issue Virtual Card</h3>
+            <button class="modal-close-btn" data-close-modal>&times;</button>
+        </div>
+        <form id="issueCardForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Card Type</label>
+                    <select class="form-control" id="newCardType">
+                        <option value="Debit">Virtual Debit Card</option>
+                        <option value="Credit (Titanium)">Titanium Credit Card</option>
+                        <option value="Virtual Shopping">One-Time Online Shopping Card</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Card Network</label>
+                    <select class="form-control" id="newCardScheme">
+                        <option value="Visa">Visa International</option>
+                        <option value="Mastercard">Mastercard Worldwide</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Visual Theme</label>
+                    <select class="form-control" id="newCardTheme">
+                        <option value="gradient-emerald">Emerald Jade</option>
+                        <option value="gradient-indigo">Deep Indigo</option>
+                        <option value="gradient-cyan">Cyber Cyan</option>
+                        <option value="gradient-gold">Royal Gold</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Issue Instant Card</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 6. TRANSACTION RECEIPT MODAL -->
+<div class="modal-backdrop" id="receiptModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa-solid fa-circle-check text-emerald-500"></i> Transaction Receipt</h3>
+            <button class="modal-close-btn" data-close-modal>&times;</button>
+        </div>
+        <div class="modal-body" id="receiptModalBody">
+            <!-- Receipt content injected by JS -->
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" data-close-modal>Close</button>
+            <button type="button" class="btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Receipt</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer"></div>
+
+<!-- LIBRARIES -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+<!-- APPLICATION SCRIPTS -->
+<script src="js/data.js"></script>
+<script src="js/banking.js"></script>
+<script src="js/cards.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
